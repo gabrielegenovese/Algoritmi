@@ -1,0 +1,12 @@
+0       http://www.uniroma1.it
+11      http://www.uniroma1.it/home/prez.php
+10      http://www.uniroma1.it/organizzazione/rettore/attivita/bilancio2.php
+9       http://www.uniroma1.it/ufficiostampa/RassegnaStampa/default.php
+8       http://www.uniroma1.it/museo/default.php
+7       http://www.uniroma1.it/biblioteche/default.php
+6       http://www.uniroma1.it/dipartimenti/default.php
+5       http://www.uniroma1.it/facolta/default.php
+4       http://www.uniroma1.it/studenti/default.php
+3       http://www.uniroma1.it/eventi/default.php
+2       http://www.uniroma1.it/ricerca/default.php
+1       http://www.uniroma1.it/organizzazione/default.php

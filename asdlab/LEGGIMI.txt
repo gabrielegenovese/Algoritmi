@@ -1,0 +1,50 @@
+Introduzione:
+------------
+Questo pacchetto software contiene il codice sorgente, le classi,
+in formato compilato, e la documentazione della libreria di
+algoritmi e strutture dati (d'ora in poi definita asdlab) sviluppata
+a corredo del libro di testo "Progetto di algoritmi e strutture dati
+in Java" scritto da Camil Demetrescu, Irene Finocchi, Umberto Ferraro
+Petrillo e Giuseppe F. Italiano, ed edito d McGraw-Hill nel 2007. 
+Il pacchetto contiene inoltre una implementazione del motore di
+ricerca, la cui realizzazione e' descritta nel libro come attivita'
+di progetto, assieme a delle classi di test che ne consentono
+la sperimentazione.
+
+Organizzazione del pacchetto:
+----------------------------
+I contenuto del pacchetto e' cosi' organizzato:
+
+- src: contiene il codice sorgente della libreria e delle
+       componenti del motore di ricerca
+
+- libs: contiene le classi della libreria, raccolte nel file asdlab.jar,
+        e le classi per l'implementazione ed il testing del motore di ricerca,
+        raccolte nel file asdlab-mdr.jar
+
+- javadoc: riporta la documentazione completa, in formato javadoc, della
+           libreria e delle componenti del motore di ricerca
+
+- LEGGIMI.txt: questo file di testo
+
+- LEGGIMI-DatiTest.txt: le istruzioni per predisporre i dati di test
+                        utilizzati per alcune delle sperimentazioni
+                        documentate nel libro
+
+- LEGGIMI-mdr.txt: le istruzioni per l'uso delle classi di test del
+                   motore di ricerca
+
+- LICENSE.txt: il testo della licenza che regolamenta l'utilizzo, la modifica
+               e la redistribuzione di questa libreria
+
+
+Requisiti:
+---------
+La libreria asdlab richiede l'utilizzo di una virtual machine Java compatibile
+con la versione 1.5 o superiore del linguaggio Java. 
+
+Contatti:
+--------
+Per ulteriori informazioni, si rimanda all'indirizzo web del libro:
+
+http://www.ateneonline.it/demetrescu
