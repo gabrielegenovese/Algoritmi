@@ -58,7 +58,7 @@ public class Solution implements MNKPlayer {
         if (depth == 0 || T.isLeaf()) {
             return evaluate(T.value);
         } else if(myNode) {
-            eval = 9999999;
+            eval = Integer.MAX_VALUE;
             for(Tree c : T.children()) {
                 eval = min(eval, alphabeta(c,false,depth-1, alpha, beta));
                 beta = min(eval, beta);
@@ -67,7 +67,7 @@ public class Solution implements MNKPlayer {
             }
             return eval;
         } else {
-            eval = -9999999;
+            eval = Integer.MIN_VALUE;
             for(Tree c : T.children()) {
                 eval = max(eval, alphabeta(c, true, depth-1, alpha, beta));
                 alpha = max(eval, alpha);
