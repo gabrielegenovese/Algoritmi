@@ -1,11 +1,11 @@
 package mnkgame;
 
 import java.util.Random;
-import java.util.TreeSet;
-
+import mnkgame.Albero;
+import mnkgame.Nodo;
 
 public class Solution implements MNKPlayer {
-    	private Random rand;
+    private Random rand;
 	private MNKBoard B;
 	private MNKGameState myWin;
 	private MNKGameState yourWin;
@@ -17,25 +17,25 @@ public class Solution implements MNKPlayer {
      */
 	public Solution() {}
 
-    public float max(float a, float b) {
+    public int max(int a, int b) {
         return a > b ? a : b;
     }
 
-    public float min(float a, float b) {
+    public int min(int a, int b) {
         return a < b ? a : b;
     }
 
-    public int evaluate(int value) {
+    public int evaluate(Object value) {
         return 1;
     }
 
-    public int alphabeta(Tree T, boolean myNode, int depth, float alpha, float beta) {
+    public int alphabeta(Albero T, boolean myNode, int depth, int alpha, int beta) {
         int eval;
-        if (depth == 0 || T.isLeaf()) {
-            return evaluate(T.value);
+        if (depth == 0 || T.info(T.radice()) == null) {
+            return evaluate(T.info(T.radice()));
         } else if(myNode) {
             eval = Integer.MAX_VALUE;
-            for(Tree c : T.children()) {
+            for(Albero c : T.figli(T.radice())) {
                 eval = min(eval, alphabeta(c,false,depth-1, alpha, beta));
                 beta = min(eval, beta);
                 if(beta <= alpha)
@@ -44,7 +44,7 @@ public class Solution implements MNKPlayer {
             return eval;
         } else {
             eval = Integer.MIN_VALUE;
-            for(Tree c : T.children()) {
+            for(Albero c : T.figli(T.radice())) {
                 eval = max(eval, alphabeta(c, true, depth-1, alpha, beta));
                 alpha = max(eval, alpha);
                 if(beta <= alpha)
@@ -52,7 +52,6 @@ public class Solution implements MNKPlayer {
             }
             return eval;
         }
-
     }
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
@@ -66,7 +65,8 @@ public class Solution implements MNKPlayer {
 	}
 
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
-		long start = System.currentTimeMillis();
+		//parte copiata dal prof temporanea
+        long start = System.currentTimeMillis();
 		if(MC.length > 0) {
             System.out.println(MC[0]);
 			MNKCell c = MC[MC.length-1]; // Recover the last move from MC
