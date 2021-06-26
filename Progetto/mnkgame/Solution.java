@@ -1,8 +1,8 @@
 package mnkgame;
 
 import java.util.Random;
-import mnkgame.Albero;
-import mnkgame.Nodo;
+import asdlab.libreria.Alberi.AlberoPFFS; // Albero generico: rappresentazione di tipo primo figlio-fratello successivo.
+import asdlab.libreria.Alberi.NodoPFFS;   // Nodo di albero generico
 
 public class Solution implements MNKPlayer {
     private Random rand;
