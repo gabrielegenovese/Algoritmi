@@ -27,8 +27,14 @@ public class Solution implements MNKPlayer {
         return a < b ? a : b;
     }
 
-    public int evaluate(MNKBoard B) {
-        return 1;
+    public float evaluate(MNKBoard B, MNKCell c) {
+        MNKGameState state = B.markCell(c.i,c.j);
+        if((state == WINP1 && myWin) || (state == WINP2 && yourWin))
+            return 1;
+        else if(state == DRAW)
+            return 0
+        else
+            return -1;
     }
 
     public float alphabetaPruning(Albero T, boolean myNode, int depth, float alpha, float beta) {
@@ -61,19 +67,24 @@ public class Solution implements MNKPlayer {
     }
 
     // per ora crea un game tree con con tutte le celle
-    public void createGameTree(Albero T, MNKBoard B, int depth) {
+    public Albero createGameTree(Albero T, MNKBoard B, int depth, int startI, int endI, int startJ, int endJ) {
+        if (depth == 0)
+            return;
+            
         MNKCell[] FC = B.getFreeCells();
         int conta = 0;
-        if(depth != 0) {
-            for (MNKCell c : FC) {
-                B.markCell(c.i,c.j);
-                T.addChild(evalute(B));
+
+        for (MNKCell c : FC) {
+            if (c.i <= endI && c.i >= startI && c.j >= startJ && c.j <= endJ) {
+                float tmp = evalute(B,c);
+                T.addChild(tmp);
                 Albero child = T.getChildren().get(conta);
-                createGameTree(T, B, depth-1);
+                createGameTree(child, B, depth-1);
                 B.unmarkCell(c.i,c.j);
                 conta++;
             }
-        }  
+        }
+        return T;
     }
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
@@ -92,7 +103,6 @@ public class Solution implements MNKPlayer {
         long start = System.currentTimeMillis();
 
 		if(MC.length > 0) {
-            //System.out.println(MC[0]);
 			MNKCell c = MC[MC.length-1]; // Recover the last move from MC
 			B.markCell(c.i,c.j);         // Save the last move in the local MNKBoard
 		}
@@ -111,11 +121,25 @@ public class Solution implements MNKPlayer {
             return MC[0];
         }
 
+        int startI = c.i + k, endI = c.i - k, startJ = c.j - k, endJ = c.j + k;
+        for (MNKCell c : MC) {
+            if(c.i + k < startI)
+                startI = c.i + k;
+            if(c.i - k > endI)
+                endI = c.i - k;
+            if(c.j - k < startJ)
+                startJ = c.j - k;
+            if(c.i + k > endJ)
+                endJ = c.j + k;
+        }
+
         Albero T = new Albero();
         T.setParent(NULL);
-        createGameTree(T, B, 3);
-        //return alphabetaPruning(T, true, 3, 0, 0);
-        return return FC[rand.nextInt(FC.length)];
+        T = createGameTree(T, B, 3, startI, endI, startJ, endJ);
+
+        //return alphabetaPruning(T, true, 3, ?, ?);
+        return FC[rand.nextInt(FC.length)];
+
         /*
         Seleziono una cella che blocchi l'ultima mossa dell'avversario oppure 
         che sia vicina a un'altra mia cella così se il tempo finisce ritorno quella
@@ -130,8 +154,6 @@ public class Solution implements MNKPlayer {
         Sarebbe ancora più efficiente creare l'albero di gioco mentre si esegue l'alpabeta.
 		*/
         
-
-		
 	}
 	
 
