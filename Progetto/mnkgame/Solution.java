@@ -10,7 +10,7 @@ public class Solution implements MNKPlayer {
 	private int TIMEOUT;
 
     //cose che credo che mi serviranno
-    private int lastMyMove[] = {-1,-1};
+    private int myLastMove[] = {-1,-1};
     private int totalCells;
 
 	
@@ -31,7 +31,7 @@ public class Solution implements MNKPlayer {
         return 1;
     }
 
-    public int alphabetaPruning(Albero T, boolean myNode, int depth, float alpha, float beta) {
+    public float alphabetaPruning(Albero T, boolean myNode, int depth, float alpha, float beta) {
         float eval;
         List figli = T.getChildren();
         if (depth == 0 || T.isLeaf()) {
@@ -42,7 +42,7 @@ public class Solution implements MNKPlayer {
         } else if(myNode) {
             eval = Float.MAX_VALUE;
             for(Albero c : figli) {
-                eval = min(eval, alphabetaPruning(c,false,depth-1, alpha, beta));
+                eval = min(eval, alphabetaPruning(c,false,depth-1,alpha,beta));
                 beta = min(eval, beta);
                 if(beta <= alpha)
                     break;
@@ -58,6 +58,22 @@ public class Solution implements MNKPlayer {
             }
             return eval;
         }
+    }
+
+    // per ora crea un game tree con con tutte le celle
+    public void createGameTree(Albero T, MNKBoard B, int depth) {
+        MNKCell[] FC = B.getFreeCells();
+        int conta = 0;
+        if(depth != 0) {
+            for (MNKCell c : FC) {
+                B.markCell(c.i,c.j);
+                T.addChild(evalute(B));
+                Albero child = T.getChildren().get(conta);
+                createGameTree(T, B, depth-1);
+                B.unmarkCell(c.i,c.j);
+                conta++;
+            }
+        }  
     }
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
@@ -90,13 +106,16 @@ public class Solution implements MNKPlayer {
             int i = B.M * B.N/2;        //dovrebbe essere il centro
             B.markcell(i,i);
             MC = B.getMarkedCells();
-            lastMyMove[0] = i;
-            lastMyMove[1] = i;
+            myLastMove[0] = i;
+            myLastMove[1] = i;
             return MC[0];
         }
 
-
-
+        Albero T = new Albero();
+        T.setParent(NULL);
+        createGameTree(T, B, 3);
+        //return alphabetaPruning(T, true, 3, 0, 0);
+        return return FC[rand.nextInt(FC.length)];
         /*
         Seleziono una cella che blocchi l'ultima mossa dell'avversario oppure 
         che sia vicina a un'altra mia cella così se il tempo finisce ritorno quella
