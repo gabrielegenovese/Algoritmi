@@ -1,8 +1,6 @@
 package mnkgame;
 
 import java.util.Random;
-import asdlab.libreria.Alberi.AlberoPFFS; // Albero generico: rappresentazione di tipo primo figlio-fratello successivo.
-import asdlab.libreria.Alberi.NodoPFFS;   // Nodo di albero generico
 
 public class Solution implements MNKPlayer {
     private Random rand;
@@ -10,6 +8,10 @@ public class Solution implements MNKPlayer {
 	private MNKGameState myWin;
 	private MNKGameState yourWin;
 	private int TIMEOUT;
+
+    //cose che credo che mi serviranno
+    private int lastMyMove[] = {-1,-1};
+    private int totalCells;
 
 	
 	/**
@@ -25,27 +27,31 @@ public class Solution implements MNKPlayer {
         return a < b ? a : b;
     }
 
-    public int evaluate(Object value) {
+    public int evaluate(MNKBoard B) {
         return 1;
     }
 
-    public int alphabeta(Albero T, boolean myNode, int depth, int alpha, int beta) {
-        int eval;
-        if (depth == 0 || T.info(T.radice()) == null) {
-            return evaluate(T.info(T.radice()));
+    public int alphabetaPruning(Albero T, boolean myNode, int depth, float alpha, float beta) {
+        float eval;
+        List figli = T.getChildren();
+        if (depth == 0 || T.isLeaf()) {
+            return T.getValue();    //dobbiamo decidere come e quando fare l'evaluate, secondo me
+                                    //non conviene mettere nell'albero del gioco tutte le composizioni
+                                    //del gioco possiamo direttamente mettere i valori, allora si fa
+                                    //l'evaluete solo alle foglie dopo aver creato il game tree.
         } else if(myNode) {
-            eval = Integer.MAX_VALUE;
-            for(Albero c : T.figli(T.radice())) {
-                eval = min(eval, alphabeta(c,false,depth-1, alpha, beta));
+            eval = Float.MAX_VALUE;
+            for(Albero c : figli) {
+                eval = min(eval, alphabetaPruning(c,false,depth-1, alpha, beta));
                 beta = min(eval, beta);
                 if(beta <= alpha)
                     break;
             }
             return eval;
         } else {
-            eval = Integer.MIN_VALUE;
-            for(Albero c : T.figli(T.radice())) {
-                eval = max(eval, alphabeta(c, true, depth-1, alpha, beta));
+            eval = Float.MIN_VALUE;
+            for(Albero c : figli) {
+                eval = max(eval, alphabetaPruning(c,true,depth-1,alpha,beta));
                 alpha = max(eval, alpha);
                 if(beta <= alpha)
                     break;
@@ -61,64 +67,56 @@ public class Solution implements MNKPlayer {
 		myWin   = first ? MNKGameState.WINP1 : MNKGameState.WINP2; 
 		yourWin = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
         System.out.println("r u winning son? " + first);
+        totalCells = M*N;
 		TIMEOUT = timeout_in_secs;
 	}
 
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
-		//parte copiata dal prof temporanea
+
         long start = System.currentTimeMillis();
+
 		if(MC.length > 0) {
-            System.out.println(MC[0]);
+            //System.out.println(MC[0]);
 			MNKCell c = MC[MC.length-1]; // Recover the last move from MC
 			B.markCell(c.i,c.j);         // Save the last move in the local MNKBoard
 		}
+
 		// If there is just one possible move, return immediately
 		if(FC.length == 1)
 			return FC[0];
 		
-		// Check whether there is single move win 
-		for(MNKCell d : FC) {
-			// If time is running out, select a random cell
-			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) {
-				MNKCell c = FC[rand.nextInt(FC.length)];
-				B.markCell(c.i,c.j);
-				return c;
-			} else if(B.markCell(d.i,d.j) == myWin) {
-				return d;  
-			} else {
-				B.unmarkCell();
-			}
-		}
-		
-		// Check whether there is a single move loss:
-		// 1. mark a random position
-		// 2. check whether the adversary can win
-		// 3. if he can win, select his winning position 
-		int pos   = rand.nextInt(FC.length); 
-		MNKCell c = FC[pos]; // random move
-		B.markCell(c.i,c.j); // mark the random position	
-		for(int k = 0; k < FC.length; k++) {
-			// If time is running out, return the randomly selected  cell
-            if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) {
-                return c;
-            } else if(k != pos) {     
-                MNKCell d = FC[k];
-                if(B.markCell(d.i,d.j) == yourWin) {
-                    B.unmarkCell();        // undo adversary move
-                    B.unmarkCell();	       // undo my move	 
-                    B.markCell(d.i,d.j);   // select his winning position
-                    return d;							 // return his winning position
-                } else {
-                    B.unmarkCell();	       // undo adversary move to try a new one
-                }	
-            }	
+        // If board is clear, return center of the board
+        if(MC.length == 0){
+            int i = B.M * B.N/2;        //dovrebbe essere il centro
+            B.markcell(i,i);
+            MC = B.getMarkedCells();
+            lastMyMove[0] = i;
+            lastMyMove[1] = i;
+            return MC[0];
         }
-		// No win or loss, return the randomly selected move
-		return c;
+
+
+
+        /*
+        Seleziono una cella che blocchi l'ultima mossa dell'avversario oppure 
+        che sia vicina a un'altra mia cella così se il tempo finisce ritorno quella
+        poi avvio l'alphabeta pruning per tot (pochi, tipo 3) livelli
+        poi man mano che il gioco va avanti posso aumentare i livelli dell'alpha beta pruning.
+
+        Creo prima l'albero di gioco e poi avvio l'algoritmo.
+        Posso creare una funzione che crea l'albero delle mosse in modo più intelligente:
+        Le mosse che mi interessano sono quelle che sono fino a K celle vicine 
+        (in tutte le direzioni) a quelle selezionate.
+
+        Sarebbe ancora più efficiente creare l'albero di gioco mentre si esegue l'alpabeta.
+		*/
+        
+
+		
 	}
 	
 
 	public String playerName() {
-		return "W0lfG3n0";
+		return "monkiflip";
 	}
 }

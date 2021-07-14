@@ -118,8 +118,8 @@ public class MNKBoard {
    * @return MNKGameState enumeration constant (OPEN,WINP1,WINP2,DRAW)
    */
 	public MNKGameState gameState() {
-    return gameState;
-  }
+    	return gameState;
+    }
 
 	/**
 	 * Returns the id of the player allowed to play next move. 
