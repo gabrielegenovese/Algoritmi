@@ -1,0 +1,18 @@
+Dobbiamo decidere come e quando fare l'evaluate, secondo me
+non conviene mettere nell'albero del gioco tutte le composizioni
+del gioco possiamo direttamente mettere i valori, allora si fa
+l'evaluete solo alle foglie dopo aver creato il game tree.
+
+
+
+Seleziono una cella che blocchi l'ultima mossa dell'avversario oppure 
+che sia vicina a un'altra mia cella così se il tempo finisce ritorno quella
+poi avvio l'alphabeta pruning per tot (pochi, tipo 3) livelli
+poi man mano che il gioco va avanti posso aumentare i livelli dell'alpha beta pruning.
+
+Creo prima l'albero di gioco e poi avvio l'algoritmo.
+Posso creare una funzione che crea l'albero delle mosse in modo più intelligente:
+Le mosse che mi interessano sono quelle che sono fino a K celle vicine 
+(in tutte le direzioni) a quelle selezionate.
+
+Sarebbe ancora più efficiente creare l'albero di gioco mentre si esegue l'alpabeta.
