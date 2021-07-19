@@ -36,17 +36,14 @@ import java.util.HashSet;
  * </p> 
  */
 public class MNKBoard {
-	/**
-   * Board rows
-   */
+
+    // Board rows
 	public final int M;
-	/**
-   * Board columns
-   */
+
+    // Board columns
 	public final int N;
-  /**
-   * Number of symbols to be aligned (horizontally, vertically, diagonally) for a win
-   */
+    
+    // Number of symbols to be aligned (horizontally, vertically, diagonally) for a win
 	public final int K;
 
 	protected final MNKCellState[][]    B;
@@ -55,19 +52,19 @@ public class MNKBoard {
 
 	private final MNKCellState[] Player = {MNKCellState.P1,MNKCellState.P2};
 
-	protected int          currentPlayer;   // currentPlayer plays next move
+	protected int           currentPlayer;   // currentPlayer plays next move
 
-	protected MNKGameState gameState;       // game state
+	protected MNKGameState  gameState;       // game state
 	
 	/**
-   * Create a board of size MxN and initialize the game parameters
-   * 
-   * @param M Board rows
+	 * Create a board of size MxN and initialize the game parameters
+	 * 
+	 * @param M Board rows
 	 * @param N Board columns
 	 * @param K Number of symbols to be aligned (horizontally, vertically, diagonally) for a win
 	 *
-   * @throws IllegalArgumentException If M,N,K are smaller than  1
-   */
+     * @throws IllegalArgumentException If M,N,K are smaller than  1
+     */
 	public MNKBoard(int M, int N, int K) throws IllegalArgumentException {
 		if (M <= 0) throw new IllegalArgumentException("M cannot be smaller than 1");
 		if (N <= 0) throw new IllegalArgumentException("N cannot be smaller than 1");
@@ -98,12 +95,12 @@ public class MNKBoard {
 	
 	/**
 	 * Returns the state of cell <code>i,j</code>
-   *
-   * @param i i-th row
-   * @param j j-th column
-   *
-   * @return State of the <code>i,j</code> cell (FREE,P1,P2)
-   * @throws IndexOutOfBoundsException If <code>i,j</code> are out of matrix bounds
+     *
+     * @param i i-th row
+     * @param j j-th column
+     *
+     * @return State of the <code>i,j</code> cell (FREE,P1,P2)
+     * @throws IndexOutOfBoundsException If <code>i,j</code> are out of matrix bounds
 	 */
 	public MNKCellState cellState(int i, int j) throws IndexOutOfBoundsException {
 		if(i < 0 || i >= M || j < 0 || j >= N)
@@ -114,12 +111,12 @@ public class MNKBoard {
 
 	/**
 	 * Returns the current state of the game.
-   *
-   * @return MNKGameState enumeration constant (OPEN,WINP1,WINP2,DRAW)
-   */
+     *
+     * @return MNKGameState enumeration constant (OPEN,WINP1,WINP2,DRAW)
+     */
 	public MNKGameState gameState() {
-    return gameState;
-  }
+    	return gameState;
+    }
 
 	/**
 	 * Returns the id of the player allowed to play next move. 
@@ -131,16 +128,16 @@ public class MNKBoard {
 	}
 	
 	/**
-   * Marks the selected cell for the current player
-   *
-   * @param i i-th row
+     * Marks the selected cell for the current player
+     *
+     * @param i i-th row
 	 * @param j j-th column
-   * 
+     * 
 	 * @return State of the game after the move
 	 * 
 	 * @throws IndexOutOfBoundsException If <code>i,j</code> are out of matrix bounds 
 	 * @throws IllegalStateException If the game already ended or if <code>i,j</code> is not a free cell
-   */
+     */
 	public MNKGameState markCell(int i, int j) throws IndexOutOfBoundsException, IllegalStateException {
 		if(gameState != MNKGameState.OPEN) {
 			throw new IllegalStateException("Game ended!");
@@ -166,13 +163,13 @@ public class MNKBoard {
 			
 			return gameState;
 		}
-  }
+    }
 
 	/**
-   * Undoes last move
-   *
-   * @throws IllegalStateException If there is no move to undo
-   */
+     * Undoes last move
+     *
+     * @throws IllegalStateException If there is no move to undo
+     */
 	public void unmarkCell() throws IllegalStateException {
 		if(MC.size() == 0) {
 			throw new IllegalStateException("No move to undo");

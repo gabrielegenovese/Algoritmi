@@ -11,7 +11,7 @@ public class Albero {
 
     public Albero(MNKBoard value) {
         this.value = value;
-        children = new ArrayList();
+        children = new ArrayList<Albero>();
     }
     
     public Albero addChild(MNKBoard child) {

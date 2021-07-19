@@ -71,7 +71,7 @@ public class MNKGame extends JFrame {
 
 	private MNKPlayerType[]    Player    = new MNKPlayerType[2];
 	private static MNKPlayer[] ComPlayer = new MNKPlayer[2];
-	private final int TIMEOUT = 10; // 10 seconds timeout
+	private final int TIMEOUT = 10000000; // 10 seconds timeout
 
 	// Random number generator
 	private Random Rand = new Random(System.currentTimeMillis());
@@ -79,7 +79,7 @@ public class MNKGame extends JFrame {
 	/** Private constructor to setup the game and the GUI components */
 	private MNKGame(int M, int N, int K, MNKGameType type) {
 		gameType = type;
-    B        = new MNKBoard(M,N,K);
+    	B        = new MNKBoard(M,N,K);
 	
 		GRID_WIDTH          = CELL_SIZE/10;  // Grid-line's width
 		GRID_WIDTH_HALF     = GRID_WIDTH/2;  // Grid-line's half-width
@@ -164,7 +164,7 @@ public class MNKGame extends JFrame {
 						System.exit(1);
 					}
 					if (!executor.isTerminated())
-    				executor.shutdownNow(); 
+    					executor.shutdownNow(); 
 
 					if(B.cellState(c.i,c.j) == MNKCellState.FREE) {
 						B.markCell(c.i,c.j);

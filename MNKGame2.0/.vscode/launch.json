@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch MNKGame",
+            "request": "launch",
+            "mainClass": "mnkgame.MNKGame",
+            "projectName": "MNKGame2.0_d2fe257a",
+            "args": "3 3 3 mnkgame.Solution"
+        },
+        {
+            "type": "java",
+            "name": "Launch MNKPlayerTester",
+            "request": "launch",
+            "mainClass": "mnkgame.MNKPlayerTester",
+            "projectName": "MNKGame2.0_d2fe257a",
+            "args": "3 3 3 mnkgame.Solution mnkgame.QuasiRandomPlayer -v -t 100 -r 1"
+        }
+    ]
+}
