@@ -1,18 +1,46 @@
-Dobbiamo decidere come e quando fare l'evaluate, secondo me
-non conviene mettere nell'albero del gioco tutte le composizioni
-del gioco possiamo direttamente mettere i valori, allora si fa
-l'evaluete solo alle foglie dopo aver creato il game tree.
 
+Così funziona abbastanza bene quando è primo.
+Quando è secondo fa delle bizze: guardare meglio come si comporta quando è secondo.
 
+Funzioni che non servono più:
 
-Seleziono una cella che blocchi l'ultima mossa dell'avversario oppure 
-che sia vicina a un'altra mia cella così se il tempo finisce ritorno quella
-poi avvio l'alphabeta pruning per tot (pochi, tipo 3) livelli
-poi man mano che il gioco va avanti posso aumentare i livelli dell'alpha beta pruning.
+// crea n livelli di un game tree
+public Albero createGameTree(Albero T, int depth) {
 
-Creo prima l'albero di gioco e poi avvio l'algoritmo.
-Posso creare una funzione che crea l'albero delle mosse in modo più intelligente:
-Le mosse che mi interessano sono quelle che sono fino a K celle vicine 
-(in tutte le direzioni) a quelle selezionate.
+    if (depth == 0) return T;
 
-Sarebbe ancora più efficiente creare l'albero di gioco mentre si esegue l'alpabeta.
+    MNKBoard B = T.getValue();
+    MNKCell[] FC = removeUselessCell(B);
+
+    for (int i = 0; i < FC.length; i++) {
+        //dublico la board -> inefficiente a livello di spazio
+        MNKBoard tmp = new MNKBoard(B.M,B.N,B.K);
+        MNKCell[] MC = B.getMarkedCells();
+        for(MNKCell m : MC)
+            tmp.markCell(m.i,m.j);
+        //inserisco la mossa
+        tmp.markCell(FC[i].i,FC[i].j);
+        Albero child = T.addChild(tmp);
+
+        //se la partita non e' finita vado avanti nella creazione dell'albero
+        if(tmp.gameState() == MNKGameState.OPEN)
+            createGameTree(child,depth-1);
+    }
+    return T;
+}
+
+public void printTree(Albero T, String ramo) {
+    System.out.println(ramo+T);
+    MNKCell[] FC = T.getValue().getFreeCells();
+    System.out.println(ramo+FC.length);
+    if(!T.isLeaf()){
+        for(Albero R : T.getChildren())
+            printTree(R,ramo+" ");
+    }
+}
+
+public void printArray(MNKCell [] F) {
+    System.out.println("Lunghezza: " + F.length);
+    for (int i = 0; i < F.length; i++)
+        System.out.println(" Cella: " + F[i]);
+}
