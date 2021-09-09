@@ -13,7 +13,7 @@
             "request": "launch",
             "mainClass": "mnkgame.MNKGame",
             "projectName": "MNKGame2.0_d2fe257a",
-            "args": "3 3 3 mnkgame.Solution"
+            "args": "5 4 3 mnkgame.Solution"
         },
         {
             "type": "java",
@@ -21,7 +21,7 @@
             "request": "launch",
             "mainClass": "mnkgame.MNKPlayerTester",
             "projectName": "MNKGame2.0_d2fe257a",
-            "args": "3 3 3 mnkgame.Solution mnkgame.QuasiRandomPlayer -v -t 100 -r 1"
+            "args": "5 4 3 mnkgame.Solution mnkgame.Solution -v -t 100 -r 1"
         }
     ]
 }
