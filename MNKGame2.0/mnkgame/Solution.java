@@ -74,12 +74,16 @@ public class Solution implements MNKPlayer {
     }
 
 
+    /*
+    ritorna un valore double che corrisponde alla lunghezza del filo più lungo del giocatore S
+    controlla anche se c'è un buco tra due fili
+    */
     public double isThereAThread(MNKBoard B, MNKCellState s, int i, int j) {
         boolean hole = false;
         int max, tmp, n = 1;
 
         // Orizzontal check
-        for(int k = 1; j-k >= 0 && B.cellState(i,j-k) == s; k++){ n++; CelleControllate[i][j-k] = true;}// backward check
+        for(int k = 1; j-k >= 0 && B.cellState(i,j-k) == s; k++){ n++; CelleControllate[i][j-k] = true;} // backward check
 
         // vedo se trovo un buco e continuo
         if(j-n-1 >= 0 && B.cellState(i,j-n-1) == MNKCellState.FREE) {
@@ -96,7 +100,7 @@ public class Solution implements MNKPlayer {
         if(!hole) {
             if(j+n+1 < B.N && B.cellState(i,j+n+1) == MNKCellState.FREE){
                 n++;
-                for(int k = n+2; j+k <B.N && B.cellState(i,j+k) == s; k++){ n++; CelleControllate[i][j+k] = true;} // backward check
+                for(int k = n+2; j+k <B.N && B.cellState(i,j+k) == s; k++){ n++; CelleControllate[i][j+k] = true;} // forward check
             }
         }
 
@@ -107,7 +111,7 @@ public class Solution implements MNKPlayer {
         // Vertical check
         hole = false;
         n = 1;
-        for(int k = 1; i-k >= 0  && B.cellState(i-k,j) == s; k++){ n++; CelleControllate[i-k][j] = true;}
+        for(int k = 1; i-k >= 0  && B.cellState(i-k,j) == s; k++){ n++; CelleControllate[i-k][j] = true;}  // backward check
 
         // vedo se trovo un buco e continuo
         if(i-n-1 >= 0 && B.cellState(i-n-1,j) == MNKCellState.FREE) {
@@ -124,7 +128,7 @@ public class Solution implements MNKPlayer {
         if(!hole) {
             if(i+n+1 < B.M && B.cellState(i+n+1,j) == MNKCellState.FREE){
                 n++;
-                for(int k = n+2; i+k < B.M && B.cellState(i+k,j) == s; k++){ n++; CelleControllate[i+k][j] = true;} // backward check
+                for(int k = n+2; i+k < B.M && B.cellState(i+k,j) == s; k++){ n++; CelleControllate[i+k][j] = true;} // forward check
             }
         }
 
@@ -153,7 +157,7 @@ public class Solution implements MNKPlayer {
         if(!hole) {
             if(i+n+1 < B.M && j+n+1 < B.N && B.cellState(i+n+1,j+n+1) == MNKCellState.FREE){
                 n++;
-                for(int k = n+2; i+k < B.M && j+k < B.N && B.cellState(i+k,j+k) == s; k++){ n++; CelleControllate[i+k][j+k] = true;} // backward check
+                for(int k = n+2; i+k < B.M && j+k < B.N && B.cellState(i+k,j+k) == s; k++){ n++; CelleControllate[i+k][j+k] = true;} // forward check
             }
         }
 
@@ -176,13 +180,13 @@ public class Solution implements MNKPlayer {
                 hole = true;
         }
 
-        for(int k = 1; i+k < B.M && j-k >= 0 && B.cellState(i+k,j-k) == s; k++){ n++; CelleControllate[i+k][j-k] = true;} // backward check
+        for(int k = 1; i+k < B.M && j-k >= 0 && B.cellState(i+k,j-k) == s; k++){ n++; CelleControllate[i+k][j-k] = true;} // forward check
 
         // se prima non c'era lo cerco dall'altra parte
         if(!hole) {
             if(i+n+1 < B.M && j-n-1 >= 0 && B.cellState(i+n+1,j-n-1) == MNKCellState.FREE){
                 n++;
-                for(int k = n+2; i+k < B.M && j-k >= 0 && B.cellState(i+k,j-k) == s; k++){ n++; CelleControllate[i+k][j-k] = true;} // backward check
+                for(int k = n+2; i+k < B.M && j-k >= 0 && B.cellState(i+k,j-k) == s; k++){ n++; CelleControllate[i+k][j-k] = true;} // forward check
             }
         }
 
@@ -195,35 +199,31 @@ public class Solution implements MNKPlayer {
 
     public double evaluate(MNKBoard B) {
         MNKGameState state = B.gameState();
-        MNKCellState s;
-        int i,j;
 
         if(state == myWin)
             return 100;
         else if(state == MNKGameState.DRAW)
             return 0;
         else if(state == MNKGameState.OPEN) {
+            // stabilisco che valore ha la board di gioco in questo momento
+            double value = 0;
+            MNKCellState s;
+            MNKCell[] MC = B.getMarkedCells();
 
             for(int w = 0; w < B.M ; w++)
                 for (int z = 0; z < B.N; z++)
                     if(B.cellState(w, z) != MNKCellState.FREE)
                         CelleControllate[w][z] = false;
 
-            double temp, max = 0;
-            // controllo il gioco rimasto in sospeso in modo da portarmi in un eventuale situazione di vantaggio
-            MNKCell[] MC = B.getMarkedCells();
-
             for (MNKCell M : MC) {
-                i = M.i;
-                j = M.j;
+                if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) break;
                 // se sono i miei simboli
                 if(!CelleControllate[M.i][M.j] && (M.state == MNKCellState.P1 && myWin == MNKGameState.WINP1) || (M.state == MNKCellState.P2 && myWin == MNKGameState.WINP2)) {
                     
                     CelleControllate[M.i][M.j] = true;
                     s = myWin == MNKGameState.WINP1 ? MNKCellState.P1 : MNKCellState.P2;
 
-                    temp = isThereAThread(B,s,i,j);
-                    if(temp > max) max = temp;
+                    value += isThereAThread(B,s,M.i,M.j); // aggiungo valore se trovo un filo dei miei simboli
                 }
                 // se sono dell'avversario
                 if(!CelleControllate[M.i][M.j] && (M.state == MNKCellState.P1 && yourWin == MNKGameState.WINP1) || (M.state == MNKCellState.P2 && yourWin == MNKGameState.WINP2)) {
@@ -231,12 +231,10 @@ public class Solution implements MNKPlayer {
                     CelleControllate[M.i][M.j] = true;
                     s = yourWin == MNKGameState.WINP1 ? MNKCellState.P1 : MNKCellState.P2;
 
-                    temp = isThereAThread(B,s,i,j)*-1;
-                    if(temp < max) max = temp;
+                    value -= isThereAThread(B,s,M.i,M.j); // tolgo valore se trovo un filo dei simboli dell'avversario
                 }
             }
-
-            return max;
+            return value;
         } else
             return -100;
     }
@@ -276,14 +274,15 @@ public class Solution implements MNKPlayer {
     public MNKCell strategiaIniziale(MNKCell[] FC, MNKCell[] MC) {
         int i, j;
 
+        // se sono primo
         if(MC.length == 0){
-            if(B.M > B.K || B.N > B.K)
+            if(B.M > B.K || B.N > B.K) // se non M o N sono maggiori di K allora posso andare a fare doppio gioco
                 B.markCell(1,1);
             else
                 B.markCell(0,0);
             MC = B.getMarkedCells();
             return MC[0];
-        } else if(MC.length == 1) {
+        } else if(MC.length == 1) { // se sono secondo
             if(B.M > B.K || B.N > B.K) {
                 if(B.cellState(1,1) == MNKCellState.FREE) {
                     B.markCell(1,1);
@@ -302,18 +301,20 @@ public class Solution implements MNKPlayer {
             return MC[1];
         }
 
-        if (B.M * B.N > 23) {
-            if(MC.length > 0 && MC.length < (k*2)) {
-                
+        if (B.M * B.N > 25) {
+            MC = B.getMarkedCells();                // DA CONTROLLARE
+            if(MC.length > 0 && MC.length < (k*2) && MC[MC.length-1].i != MC[MC.length-1].j) {  
+                int add = 0;
                 if(MC.length % 2 == 0){
                     i = MC[0].i;
                     j = MC[0].j;
                 } else {
                     i = MC[1].i;
                     j = MC[1].j;
+                    add = 3;
                 }
 
-                for(int w = 1; w < k; w++){
+                for(int w = 1; w < k-add; w++){
                     if (!rev) {
                         if(B.M > B.N) {
                             if(B.cellState(i+w,j) == MNKCellState.FREE) {
@@ -358,11 +359,12 @@ public class Solution implements MNKPlayer {
                     }
                 }
             }
+
             eur = -2;
             if (k > 5)
                 eur *= 2;
             if(B.M * B.N > 100)
-                eur *= 2;
+                eur = -9;
         } else {
             eur = 2;
         }
@@ -372,6 +374,7 @@ public class Solution implements MNKPlayer {
     
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
         MNKCell selected;
+        double moveValue, max = -10000;
         start = System.currentTimeMillis();
 
 		if(MC.length > 0) {
@@ -379,7 +382,7 @@ public class Solution implements MNKPlayer {
 			B.markCell(c.i,c.j);         // Save the last move in the local MNKBoard
 		}
 
-		// If there is just one possible move, return immediately
+		// if there is just one possible move, return immediately
 		if(FC.length == 1) return FC[0];
 
         selected = strategiaIniziale(FC, MC);
@@ -388,7 +391,6 @@ public class Solution implements MNKPlayer {
         selected = FC[0];
         // valuto la mossa migliore tramite alphabeta
         MNKCell[] interestingFC = removeUselessCells(B);
-        double moveValue, max = -10000;
         for(MNKCell A : interestingFC) {
             if ((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0))
                 break;
