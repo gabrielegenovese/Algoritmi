@@ -206,7 +206,7 @@ public class Solution implements MNKPlayer {
             return 0;
         else if(state == MNKGameState.OPEN) {
             // stabilisco che valore ha la board di gioco in questo momento
-            double value = 0;
+            double value, tmp, pos = -1, neg = 0;
             MNKCellState s;
             MNKCell[] MC = B.getMarkedCells();
 
@@ -223,7 +223,8 @@ public class Solution implements MNKPlayer {
                     CelleControllate[M.i][M.j] = true;
                     s = myWin == MNKGameState.WINP1 ? MNKCellState.P1 : MNKCellState.P2;
 
-                    value += isThereAThread(B,s,M.i,M.j); // aggiungo valore se trovo un filo dei miei simboli
+                    tmp = isThereAThread(B,s,M.i,M.j); // aggiungo valore se trovo un filo dei miei simboli
+                    if (tmp > pos) pos = tmp;
                 }
                 // se sono dell'avversario
                 if(!CelleControllate[M.i][M.j] && (M.state == MNKCellState.P1 && yourWin == MNKGameState.WINP1) || (M.state == MNKCellState.P2 && yourWin == MNKGameState.WINP2)) {
@@ -231,9 +232,15 @@ public class Solution implements MNKPlayer {
                     CelleControllate[M.i][M.j] = true;
                     s = yourWin == MNKGameState.WINP1 ? MNKCellState.P1 : MNKCellState.P2;
 
-                    value -= isThereAThread(B,s,M.i,M.j); // tolgo valore se trovo un filo dei simboli dell'avversario
+                    tmp = isThereAThread(B,s,M.i,M.j); // tolgo valore se trovo un filo dei simboli dell'avversario
+                    if (tmp > neg) neg = tmp;
                 }
             }
+            if (pos > neg) 
+                value = pos;
+            else
+                value = neg*-1;
+
             return value;
         } else
             return -100;
@@ -273,7 +280,7 @@ public class Solution implements MNKPlayer {
 
     public MNKCell strategiaIniziale(MNKCell[] FC, MNKCell[] MC) {
         int i, j;
-
+        
         // se sono primo
         if(MC.length == 0){
             if(B.M > B.K || B.N > B.K) // se non M o N sono maggiori di K allora posso andare a fare doppio gioco
@@ -302,8 +309,10 @@ public class Solution implements MNKPlayer {
         }
 
         if (B.M * B.N > 25) {
-            MC = B.getMarkedCells();                // DA CONTROLLARE
-            if(MC.length > 0 && MC.length < (k*2) && MC[MC.length-1].i != MC[MC.length-1].j) {  
+            boolean stop = false;
+            MC = B.getMarkedCells();
+            if(MC[MC.length-1].i == MC[MC.length-1].j && MC[MC.length-1].i <= B.K) stop = true; // se mi blocca all'inizio mi fermo funziona solo quando vado in diagonale
+            if(MC.length > 0 && MC.length < (k*2) && !stop) {  
                 int add = 0;
                 if(MC.length % 2 == 0){
                     i = MC[0].i;
@@ -311,7 +320,7 @@ public class Solution implements MNKPlayer {
                 } else {
                     i = MC[1].i;
                     j = MC[1].j;
-                    add = 3;
+                    add = 3; // si ferma un po' prima quando è secondo perché così risponde con alphabeta
                 }
 
                 for(int w = 1; w < k-add; w++){
@@ -362,9 +371,12 @@ public class Solution implements MNKPlayer {
 
             eur = -2;
             if (k > 5)
-                eur *= 2;
+                eur *= 2; // tolgo 4 da k così esploro di meno il quando K >= 7
+            else
+                eur = -1;
             if(B.M * B.N > 100)
-                eur = -9;
+                eur = 1-k; // depth = 1 se la matrice è troppo grande
+            if(MC.length > 100) eur = -k;
         } else {
             eur = 2;
         }
